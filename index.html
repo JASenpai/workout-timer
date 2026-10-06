@@ -105,10 +105,14 @@
       <h2 id="exName">Goblet Squat</h2>
       <p id="exNotes">Keep chest up; control the descent</p>
       <div class="meta-grid">
-        <div class="meta-item">Muscle: <span id="exMuscle">Legs / Glutes</span></div>
-        <div class="meta-item">Reps/Time: <span id="exReps">10–15</span></div>
-        <div class="meta-item">Load: <span id="exLoad">10 kg</span></div>
-        <div class="meta-item">Rest: <span id="exRest">60 sec</span></div>
+        <div class="meta-item">Muscle: <span id="exMuscle"></span></div>
+        <div class="meta-item">Reps: <input type="text" id="editReps" style="background:#1A202C; color:#FFF; border:1px solid #4A5568; border-radius:4px; padding:2px 6px; width:90px; font-size:0.9rem;" onchange="updateReps(this.value)"></div>
+        <div class="meta-item">Load: <span id="exLoad"></span></div>
+        <div class="meta-item">Sets: 
+          <button onclick="adjustSets(-1)" style="background:#4A5568; color:white; border:none; border-radius:3px; padding:1px 6px; cursor:pointer;">-</button>
+          <span id="editSets" style="font-weight:bold; margin:0 4px;"></span>
+          <button onclick="adjustSets(1)" style="background:#4A5568; color:white; border:none; border-radius:3px; padding:1px 6px; cursor:pointer;">+</button>
+        </div>
       </div>
     </div>
 
@@ -187,9 +191,9 @@
       document.getElementById('exName').innerText = ex.name;
       document.getElementById('exNotes').innerText = ex.notes;
       document.getElementById('exMuscle').innerText = ex.muscle;
-      document.getElementById('exReps').innerText = ex.reps;
+      document.getElementById('editReps').value = ex.reps;
+      document.getElementById('editSets').innerText = ex.sets;
       document.getElementById('exLoad').innerText = ex.load;
-      document.getElementById('exRest').innerText = ex.rest + ' sec';
 
       const imgEl = document.getElementById('exImage');
       if (ex.image) {
@@ -220,6 +224,17 @@
         `;
         listEl.appendChild(div);
       });
+    }
+
+    function adjustSets(delta) {
+      const ex = workouts[currentWorkoutKey][currentExIndex];
+      ex.sets = Math.max(1, ex.sets + delta);
+      if (currentSet > ex.sets) currentSet = ex.sets;
+      render();
+    }
+
+    function updateReps(val) {
+      workouts[currentWorkoutKey][currentExIndex].reps = val;
     }
 
     function selectExercise(idx) {
