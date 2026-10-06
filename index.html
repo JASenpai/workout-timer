@@ -63,6 +63,13 @@
     <div class="card">
       <div class="timer-label" id="timerLabel">Ready</div>
       <div class="timer-display" id="timerDisplay">00:00</div>
+      <div style="display: flex; gap: 6px; justify-content: center; margin-bottom: 4px;">
+        <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.85rem;" onclick="setTimerPreset(30)">30s</button>
+        <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.85rem;" onclick="setTimerPreset(45)">45s</button>
+        <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.85rem;" onclick="setTimerPreset(60)">60s</button>
+        <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.85rem;" onclick="setTimerPreset(90)">90s</button>
+        <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.85rem;" onclick="adjustTime(10)">+10s</button>
+      </div>
       <div class="controls">
         <button class="btn btn-success" id="startBtn" onclick="toggleTimer()">Start</button>
         <button class="btn btn-secondary" onclick="nextStep()">Next</button>
@@ -276,6 +283,20 @@
       timeLeft = 0;
       document.getElementById('timerLabel').innerText = 'Ready';
       render();
+    }
+
+    function setTimerPreset(sec) {
+      stopTimer();
+      timeLeft = sec;
+      isResting = true;
+      document.getElementById('timerLabel').innerText = `Rest (${sec}s)`;
+      document.getElementById('timerDisplay').innerText = formatTime(timeLeft);
+      startTimer();
+    }
+
+    function adjustTime(sec) {
+      timeLeft = Math.max(0, timeLeft + sec);
+      document.getElementById('timerDisplay').innerText = formatTime(timeLeft);
     }
 
     // Register Service Worker
