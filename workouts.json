@@ -1,7 +1,25 @@
 {
   "A": [
-    { "name": "Goblet Squat", "muscle": "Legs / Glutes", "sets": 4, "reps": "10–15 reps", "load": "10 kg", "rest": 60, "notes": "Keep chest up; control the descent" },
-    { "name": "One-Arm Dumbbell Row", "muscle": "Back", "sets": 4, "reps": "10–15 / side", "load": "10 kg", "rest": 60, "notes": "Pull elbow toward your hip" },
+    { 
+      "name": "Goblet Squat", 
+      "muscle": "Legs / Glutes", 
+      "sets": 4, 
+      "reps": "10–15 reps", 
+      "load": "10 kg", 
+      "rest": 60, 
+      "notes": "Keep chest up; control the descent",
+      "image": "https://www.hsnstore.com/blog/wp-content/uploads/2026/01/goblet-squat-db.webp"
+    },
+    { 
+      "name": "One-Arm Dumbbell Row", 
+      "muscle": "Back", 
+      "sets": 4, 
+      "reps": "10–15 / side", 
+      "load": "10 kg", 
+      "rest": 60, 
+      "notes": "Pull elbow toward your hip",
+      "image": "https://i.garagegymreviews.com/291/718/568/4/dumbbell-3-point-row.animated.webp"
+    },
     { "name": "Dumbbell Floor Press", "muscle": "Chest / Triceps", "sets": 3, "reps": "10–15 reps", "load": "10 kg", "rest": 60, "notes": "Keep elbow controlled; don't bounce" },
     { "name": "Romanian Deadlift", "muscle": "Hamstrings / Glutes", "sets": 4, "reps": "10–15 reps", "load": "10 kg", "rest": 60, "notes": "Push hips back; keep back neutral" },
     { "name": "Dumbbell Shoulder Press", "muscle": "Shoulders", "sets": 3, "reps": "10–12 reps", "load": "3–5 kg", "rest": 60, "notes": "Do not arch your lower back" },
