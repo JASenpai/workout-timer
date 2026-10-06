@@ -1,6 +1,7 @@
-const CACHE_NAME = 'workout-timer-v1';
+const CACHE_NAME = 'workout-timer-v2';
 const ASSETS = [
   './index.html',
+  './workouts.json',
   './manifest.json',
   './icon-192.png',
   './icon-512.png'

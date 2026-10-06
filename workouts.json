@@ -1,0 +1,21 @@
+{
+  "A": [
+    { "name": "Goblet Squat", "muscle": "Legs / Glutes", "sets": 4, "reps": "10–15 reps", "load": "10 kg", "rest": 60, "notes": "Keep chest up; control the descent" },
+    { "name": "One-Arm Dumbbell Row", "muscle": "Back", "sets": 4, "reps": "10–15 / side", "load": "10 kg", "rest": 60, "notes": "Pull elbow toward your hip" },
+    { "name": "Dumbbell Floor Press", "muscle": "Chest / Triceps", "sets": 3, "reps": "10–15 reps", "load": "10 kg", "rest": 60, "notes": "Keep elbow controlled; don't bounce" },
+    { "name": "Romanian Deadlift", "muscle": "Hamstrings / Glutes", "sets": 4, "reps": "10–15 reps", "load": "10 kg", "rest": 60, "notes": "Push hips back; keep back neutral" },
+    { "name": "Dumbbell Shoulder Press", "muscle": "Shoulders", "sets": 3, "reps": "10–12 reps", "load": "3–5 kg", "rest": 60, "notes": "Do not arch your lower back" },
+    { "name": "Plank", "muscle": "Core", "sets": 3, "reps": "30–60 sec", "load": "Bodyweight", "rest": 45, "notes": "Keep body in a straight line" },
+    { "name": "High Knees / Fast March", "muscle": "Cardio", "sets": 5, "reps": "30 sec work", "load": "Bodyweight", "rest": 30, "notes": "Keep a sustainable pace" }
+  ],
+  "B": [
+    { "name": "Reverse Lunge", "muscle": "Legs / Glutes", "sets": 3, "reps": "10 / leg", "load": "Bodyweight → 5 kg", "rest": 60, "notes": "Use support if balance is difficult" },
+    { "name": "Resistance Band Row", "muscle": "Back", "sets": 4, "reps": "12–20 reps", "load": "High band", "rest": 60, "notes": "Squeeze shoulder blades together" },
+    { "name": "Glute Bridge", "muscle": "Glutes", "sets": 4, "reps": "15–20 reps", "load": "10 kg", "rest": 60, "notes": "Pause at the top" },
+    { "name": "Push-Up", "muscle": "Chest / Triceps", "sets": 3, "reps": "8–15 reps", "load": "Bodyweight", "rest": 60, "notes": "Use elevated hands if needed" },
+    { "name": "Dumbbell Lateral Raise", "muscle": "Shoulders", "sets": 3, "reps": "12–20 reps", "load": "1.5–3 kg", "rest": 45, "notes": "Light weight; controlled movement" },
+    { "name": "Dumbbell Biceps Curl", "muscle": "Biceps", "sets": 3, "reps": "10–15 reps", "load": "5 kg", "rest": 60, "notes": "Keep elbows close to body" },
+    { "name": "Overhead Triceps Extension", "muscle": "Triceps", "sets": 3, "reps": "10–15 reps", "load": "3–5 kg", "rest": 60, "notes": "Keep elbows pointing forward" },
+    { "name": "Dead Bug", "muscle": "Core", "sets": 3, "reps": "10 / side", "load": "Bodyweight", "rest": 45, "notes": "Keep lower back close to mat" }
+  ]
+}
