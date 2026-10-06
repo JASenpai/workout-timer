@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Workout Timer PWA</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#3182CE">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    body { background-color: #1A202C; color: #EDF2F7; padding: 16px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+    .container { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 16px; }
+    header { display: flex; justify-content: space-between; align-items: center; background: #2D3748; padding: 16px; border-radius: 12px; }
+    h1 { font-size: 1.25rem; font-weight: 700; color: #63B3ED; }
+    .btn { background: #3182CE; color: white; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 1rem; transition: background 0.2s; }
+    .btn:active { transform: scale(0.98); }
+    .btn-secondary { background: #4A5568; }
+    .btn-danger { background: #E53E3E; }
+    .btn-success { background: #38A169; }
+    
+    .card { background: #2D3748; padding: 20px; border-radius: 12px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    
+    /* Workout Selector */
+    .selector { display: flex; gap: 10px; }
+    .selector button { flex: 1; padding: 12px; border-radius: 8px; border: 2px solid #4A5568; background: #1A202C; color: #A0AEC0; font-weight: bold; cursor: pointer; }
+    .selector button.active { border-color: #3182CE; background: #2b6cb033; color: #63B3ED; }
+
+    /* Timer Display */
+    .timer-display { text-align: center; font-size: 4rem; font-weight: 800; font-variant-numeric: tabular-nums; color: #63B3ED; margin: 10px 0; }
+    .timer-label { text-align: center; font-size: 1.1rem; color: #A0AEC0; text-transform: uppercase; letter-spacing: 1px; }
+    
+    .controls { display: flex; gap: 10px; justify-content: center; }
+    .controls button { flex: 1; padding: 14px; font-size: 1.1rem; }
+
+    /* Exercise list */
+    .exercise-info h2 { font-size: 1.3rem; color: #FFF; margin-bottom: 4px; }
+    .exercise-info p { color: #A0AEC0; font-size: 0.95rem; line-height: 1.4; }
+    .meta-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 8px; font-size: 0.9rem; background: #1A202C; padding: 10px; border-radius: 8px; }
+    .meta-item span { color: #CBD5E0; font-weight: bold; }
+
+    .workout-list { display: flex; flex-direction: column; gap: 8px; max-height: 250px; overflow-y: auto; padding-right: 4px; }
+    .ex-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: #1A202C; border-radius: 8px; cursor: pointer; border: 1px solid transparent; }
+    .ex-item.current { border-color: #3182CE; background: #2b6cb022; }
+    .ex-item-info { display: flex; flex-direction: column; }
+    .ex-item-name { font-weight: 600; font-size: 0.95rem; }
+    .ex-item-details { font-size: 0.8rem; color: #A0AEC0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🏋️ Workout Timer</h1>
+      <button class="btn btn-secondary" id="installBtn" style="display:none;">Install App</button>
+    </header>
+
+    <!-- Workout Selector -->
+    <div class="selector">
+      <button id="btnA" class="active" onclick="switchWorkout('A')">Workout A</button>
+      <button id="btnB" onclick="switchWorkout('B')">Workout B</button>
+    </div>
+
+    <!-- Active Timer Card -->
+    <div class="card">
+      <div class="timer-label" id="timerLabel">Ready</div>
+      <div class="timer-display" id="timerDisplay">00:00</div>
+      <div class="controls">
+        <button class="btn btn-success" id="startBtn" onclick="toggleTimer()">Start</button>
+        <button class="btn btn-secondary" onclick="nextStep()">Next</button>
+        <button class="btn btn-danger" onclick="resetTimer()">Reset</button>
+      </div>
+    </div>
+
+    <!-- Current Exercise Card -->
+    <div class="card exercise-info">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span id="progressIndicator" style="font-size: 0.85rem; color: #A0AEC0;">Exercise 1 of 7</span>
+        <span id="setIndicator" style="font-size: 0.85rem; color: #3182CE; font-weight: bold;">Set 1 / 4</span>
+      </div>
+      <h2 id="exName">Goblet Squat</h2>
+      <p id="exNotes">Keep chest up; control the descent</p>
+      <div class="meta-grid">
+        <div class="meta-item">Muscle: <span id="exMuscle">Legs / Glutes</span></div>
+        <div class="meta-item">Reps/Time: <span id="exReps">10–15</span></div>
+        <div class="meta-item">Load: <span id="exLoad">10 kg</span></div>
+        <div class="meta-item">Rest: <span id="exRest">60 sec</span></div>
+      </div>
+    </div>
+
+    <!-- Workout Routine List -->
+    <div class="card">
+      <h3 style="font-size: 1rem; color: #CBD5E0; margin-bottom: 4px;">Routine Exercises</h3>
+      <div class="workout-list" id="workoutList"></div>
+    </div>
+  </div>
+
+  <script>
+    const workouts = {
+      A: [
+        { name: "Goblet Squat", muscle: "Legs / Glutes", sets: 4, reps: "10–15 reps", load: "10 kg", rest: 60, notes: "Keep chest up; control the descent" },
+        { name: "One-Arm Dumbbell Row", muscle: "Back", sets: 4, reps: "10–15 / side", load: "10 kg", rest: 60, notes: "Pull elbow toward your hip" },
+        { name: "Dumbbell Floor Press", muscle: "Chest / Triceps", sets: 3, reps: "10–15 reps", load: "10 kg", rest: 60, notes: "Keep elbow controlled; don't bounce" },
+        { name: "Romanian Deadlift", muscle: "Hamstrings / Glutes", sets: 4, reps: "10–15 reps", load: "10 kg", rest: 60, notes: "Push hips back; keep back neutral" },
+        { name: "Dumbbell Shoulder Press", muscle: "Shoulders", sets: 3, reps: "10–12 reps", load: "3–5 kg", rest: 60, notes: "Do not arch your lower back" },
+        { name: "Plank", muscle: "Core", sets: 3, reps: "30–60 sec", load: "Bodyweight", rest: 45, notes: "Keep body in a straight line" },
+        { name: "High Knees / Fast March", muscle: "Cardio", sets: 5, reps: "30 sec work", load: "Bodyweight", rest: 30, notes: "Keep a sustainable pace" }
+      ],
+      B: [
+        { name: "Reverse Lunge", muscle: "Legs / Glutes", sets: 3, reps: "10 / leg", load: "Bodyweight → 5 kg", rest: 60, notes: "Use support if balance is difficult" },
+        { name: "Resistance Band Row", muscle: "Back", sets: 4, reps: "12–20 reps", load: "High band", rest: 60, notes: "Squeeze shoulder blades together" },
+        { name: "Glute Bridge", muscle: "Glutes", sets: 4, reps: "15–20 reps", load: "10 kg", rest: 60, notes: "Pause at the top" },
+        { name: "Push-Up", muscle: "Chest / Triceps", sets: 3, reps: "8–15 reps", load: "Bodyweight", rest: 60, notes: "Use elevated hands if needed" },
+        { name: "Dumbbell Lateral Raise", muscle: "Shoulders", sets: 3, reps: "12–20 reps", load: "1.5–3 kg", rest: 45, notes: "Light weight; controlled movement" },
+        { name: "Dumbbell Biceps Curl", muscle: "Biceps", sets: 3, reps: "10–15 reps", load: "5 kg", rest: 60, notes: "Keep elbows close to body" },
+        { name: "Overhead Triceps Extension", muscle: "Triceps", sets: 3, reps: "10–15 reps", load: "3–5 kg", rest: 60, notes: "Keep elbows pointing forward" },
+        { name: "Dead Bug", muscle: "Core", sets: 3, reps: "10 / side", load: "Bodyweight", rest: 45, notes: "Keep lower back close to mat" }
+      ]
+    };
+
+    let currentWorkoutKey = 'A';
+    let currentExIndex = 0;
+    let currentSet = 1;
+    let isResting = false;
+    let timeLeft = 0;
+    let timerInterval = null;
+    let isRunning = false;
+
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function beep() {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.type = 'sine';
+      osc.frequency.value = 880;
+      gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.2);
+      if (navigator.vibrate) navigator.vibrate(200);
+    }
+
+    function switchWorkout(key) {
+      currentWorkoutKey = key;
+      currentExIndex = 0;
+      currentSet = 1;
+      isResting = false;
+      stopTimer();
+      document.getElementById('btnA').className = key === 'A' ? 'active' : '';
+      document.getElementById('btnB').className = key === 'B' ? 'active' : '';
+      render();
+    }
+
+    function render() {
+      const exList = workouts[currentWorkoutKey];
+      const ex = exList[currentExIndex];
+
+      document.getElementById('progressIndicator').innerText = `Exercise ${currentExIndex + 1} of ${exList.length}`;
+      document.getElementById('setIndicator').innerText = `Set ${currentSet} / ${ex.sets}`;
+      document.getElementById('exName').innerText = ex.name;
+      document.getElementById('exNotes').innerText = ex.notes;
+      document.getElementById('exMuscle').innerText = ex.muscle;
+      document.getElementById('exReps').innerText = ex.reps;
+      document.getElementById('exLoad').innerText = ex.load;
+      document.getElementById('exRest').innerText = ex.rest + ' sec';
+
+      if (!isRunning) {
+        document.getElementById('timerLabel').innerText = isResting ? 'Rest Period' : 'Ready / Working';
+        document.getElementById('timerDisplay').innerText = formatTime(isResting ? timeLeft : 0);
+      }
+
+      // Render list
+      const listEl = document.getElementById('workoutList');
+      listEl.innerHTML = '';
+      exList.forEach((item, idx) => {
+        const div = document.createElement('div');
+        div.className = `ex-item ${idx === currentExIndex ? 'current' : ''}`;
+        div.onclick = () => { selectExercise(idx); };
+        div.innerHTML = `
+          <div class="ex-item-info">
+            <span class="ex-item-name">${idx + 1}. ${item.name}</span>
+            <span class="ex-item-details">${item.sets} sets • ${item.reps}</span>
+          </div>
+          <span style="font-size: 0.8rem; color: #63B3ED;">${item.load}</span>
+        `;
+        listEl.appendChild(div);
+      });
+    }
+
+    function selectExercise(idx) {
+      stopTimer();
+      currentExIndex = idx;
+      currentSet = 1;
+      isResting = false;
+      render();
+    }
+
+    function formatTime(sec) {
+      const m = Math.floor(sec / 60);
+      const s = sec % 60;
+      return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    }
+
+    function toggleTimer() {
+      if (isRunning) {
+        stopTimer();
+        document.getElementById('startBtn').innerText = 'Resume';
+        document.getElementById('startBtn').className = 'btn btn-success';
+      } else {
+        startTimer();
+      }
+    }
+
+    function startTimer() {
+      if (!isRunning) {
+        isRunning = true;
+        document.getElementById('startBtn').innerText = 'Pause';
+        document.getElementById('startBtn').className = 'btn btn-secondary';
+        
+        if (!isResting && timeLeft === 0) {
+          // Starting rest after a set
+          const ex = workouts[currentWorkoutKey][currentExIndex];
+          timeLeft = ex.rest;
+          isResting = true;
+          document.getElementById('timerLabel').innerText = 'Rest Period';
+        }
+
+        timerInterval = setInterval(() => {
+          if (timeLeft > 0) {
+            timeLeft--;
+            document.getElementById('timerDisplay').innerText = formatTime(timeLeft);
+            if (timeLeft <= 3 && timeLeft > 0) beep();
+          } else {
+            beep();
+            stopTimer();
+            // Rest finished, move to next set or exercise
+            const ex = workouts[currentWorkoutKey][currentExIndex];
+            if (currentSet < ex.sets) {
+              currentSet++;
+              isResting = false;
+              document.getElementById('timerLabel').innerText = `Ready for Set ${currentSet}`;
+              timeLeft = 0;
+            } else {
+              // Next exercise
+              if (currentExIndex < workouts[currentWorkoutKey].length - 1) {
+                currentExIndex++;
+                currentSet = 1;
+                isResting = false;
+                document.getElementById('timerLabel').innerText = 'Next Exercise';
+                timeLeft = 0;
+              } else {
+                document.getElementById('timerLabel').innerText = 'Workout Complete! 🎉';
+              }
+            }
+            render();
+          }
+        }, 1000);
+      }
+    }
+
+    function stopTimer() {
+      isRunning = false;
+      clearInterval(timerInterval);
+      document.getElementById('startBtn').innerText = 'Start Rest';
+      document.getElementById('startBtn').className = 'btn btn-success';
+    }
+
+    function nextStep() {
+      stopTimer();
+      const ex = workouts[currentWorkoutKey][currentExIndex];
+      if (currentSet < ex.sets) {
+        currentSet++;
+      } else if (currentExIndex < workouts[currentWorkoutKey].length - 1) {
+        currentExIndex++;
+        currentSet = 1;
+      }
+      isResting = false;
+      timeLeft = 0;
+      document.getElementById('timerLabel').innerText = 'Ready';
+      render();
+    }
+
+    function resetTimer() {
+      stopTimer();
+      currentSet = 1;
+      isResting = false;
+      timeLeft = 0;
+      document.getElementById('timerLabel').innerText = 'Ready';
+      render();
+    }
+
+    // Register Service Worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(() => console.log('Service Worker Registered'));
+    }
+
+    // Install prompt
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      const installBtn = document.getElementById('installBtn');
+      installBtn.style.display = 'block';
+      installBtn.onclick = () => {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            installBtn.style.display = 'none';
+          }
+          deferredPrompt = null;
+        });
+      };
+    });
+
+    render();
+  </script>
+</body>
+</html>
