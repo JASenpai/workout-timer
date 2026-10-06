@@ -44,9 +44,27 @@
     .ex-item-info { display: flex; flex-direction: column; }
     .ex-item-name { font-weight: 600; font-size: 0.95rem; }
     .ex-item-details { font-size: 0.8rem; color: #A0AEC0; }
+    /* Summary Screen */
+    #summaryScreen {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: #1A202C; display: none; flex-direction: column;
+      align-items: center; justify-content: center; z-index: 1000;
+      padding: 24px; text-align: center;
+    }
+    #summaryScreen h1 { font-size: 2.5rem; color: #63B3ED; margin-bottom: 20px; }
+    #summaryScreen p { font-size: 1.2rem; color: #A0AEC0; margin-bottom: 30px; }
+
+    /* Exercise Image placeholder */
+    .ex-media { width: 100%; border-radius: 8px; margin-bottom: 8px; display: none; }
   </style>
 </head>
 <body>
+  <div id="summaryScreen">
+    <h1>Workout Done! 🎉</h1>
+    <p id="summaryText">Total time: 45:00</p>
+    <button class="btn" onclick="location.reload()">Back to Start</button>
+  </div>
+
   <div class="container">
     <header>
       <h1>🏋️ Workout Timer</h1>
@@ -83,6 +101,7 @@
         <span id="progressIndicator" style="font-size: 0.85rem; color: #A0AEC0;">Exercise 1 of 7</span>
         <span id="setIndicator" style="font-size: 0.85rem; color: #3182CE; font-weight: bold;">Set 1 / 4</span>
       </div>
+      <img id="exImage" class="ex-media" src="" alt="Exercise preview">
       <h2 id="exName">Goblet Squat</h2>
       <p id="exNotes">Keep chest up; control the descent</p>
       <div class="meta-grid">
@@ -120,6 +139,18 @@
     let timeLeft = 0;
     let timerInterval = null;
     let isRunning = false;
+    let startTime = null;
+    let wakeLock = null;
+
+    async function requestWakeLock() {
+      try {
+        if ('wakeLock' in navigator) {
+          wakeLock = await navigator.wakeLock.request('screen');
+        }
+      } catch (err) {
+        console.warn(`${err.name}, ${err.message}`);
+      }
+    }
 
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     function beep() {
@@ -160,6 +191,14 @@
       document.getElementById('exLoad').innerText = ex.load;
       document.getElementById('exRest').innerText = ex.rest + ' sec';
 
+      const imgEl = document.getElementById('exImage');
+      if (ex.image) {
+        imgEl.src = ex.image;
+        imgEl.style.display = 'block';
+      } else {
+        imgEl.style.display = 'none';
+      }
+
       if (!isRunning) {
         document.getElementById('timerLabel').innerText = isResting ? 'Rest Period' : 'Ready / Working';
         document.getElementById('timerDisplay').innerText = formatTime(isResting ? timeLeft : 0);
@@ -198,6 +237,10 @@
     }
 
     function toggleTimer() {
+      if (!startTime) {
+        startTime = new Date();
+        requestWakeLock();
+      }
       if (isRunning) {
         stopTimer();
         document.getElementById('startBtn').innerText = 'Resume';
@@ -245,13 +288,22 @@
                 document.getElementById('timerLabel').innerText = 'Next Exercise';
                 timeLeft = 0;
               } else {
-                document.getElementById('timerLabel').innerText = 'Workout Complete! 🎉';
+                showSummary();
               }
             }
             render();
           }
         }, 1000);
       }
+    }
+
+    function showSummary() {
+      stopTimer();
+      if (wakeLock) wakeLock.release();
+      const endTime = new Date();
+      const diff = Math.floor((endTime - startTime) / 1000);
+      document.getElementById('summaryText').innerText = `Total time: ${formatTime(diff)}`;
+      document.getElementById('summaryScreen').style.display = 'flex';
     }
 
     function stopTimer() {
