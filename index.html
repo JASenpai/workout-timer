@@ -17,9 +17,9 @@
     .btn-secondary { background: #4A5568; }
     .btn-danger { background: #E53E3E; }
     .btn-success { background: #38A169; }
-    
+
     .card { background: #2D3748; padding: 20px; border-radius: 12px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-    
+
     /* Workout Selector */
     .selector { display: flex; gap: 10px; }
     .selector button { flex: 1; padding: 12px; border-radius: 8px; border: 2px solid #4A5568; background: #1A202C; color: #A0AEC0; font-weight: bold; cursor: pointer; }
@@ -28,22 +28,38 @@
     /* Timer Display */
     .timer-display { text-align: center; font-size: 4rem; font-weight: 800; font-variant-numeric: tabular-nums; color: #63B3ED; margin: 10px 0; }
     .timer-label { text-align: center; font-size: 1.1rem; color: #A0AEC0; text-transform: uppercase; letter-spacing: 1px; }
-    
+    .presets { display: flex; gap: 6px; justify-content: center; margin-bottom: 4px; flex-wrap: wrap; }
+    .presets button { padding: 6px 12px; font-size: 0.85rem; }
+
     .controls { display: flex; gap: 10px; justify-content: center; }
     .controls button { flex: 1; padding: 14px; font-size: 1.1rem; }
+
+    /* Block header */
+    .block-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .badge { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.5px; padding: 3px 8px; border-radius: 999px; background: #2b6cb055; color: #90CDF4; text-transform: uppercase; white-space: nowrap; }
+    .badge.single { background: #4A556855; color: #CBD5E0; }
+    .block-name { font-size: 1.1rem; font-weight: 700; color: #FFF; }
+    .instructions { font-size: 0.85rem; color: #A0AEC0; line-height: 1.4; border-left: 3px solid #4A5568; padding-left: 10px; }
 
     /* Exercise list */
     .exercise-info h2 { font-size: 1.3rem; color: #FFF; margin-bottom: 4px; }
     .exercise-info p { color: #A0AEC0; font-size: 0.95rem; line-height: 1.4; }
     .meta-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 8px; font-size: 0.9rem; background: #1A202C; padding: 10px; border-radius: 8px; }
     .meta-item span { color: #CBD5E0; font-weight: bold; }
+    .ex-media { width: 100%; border-radius: 8px; margin-bottom: 8px; display: none; }
 
-    .workout-list { display: flex; flex-direction: column; gap: 8px; max-height: 250px; overflow-y: auto; padding-right: 4px; }
-    .ex-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: #1A202C; border-radius: 8px; cursor: pointer; border: 1px solid transparent; }
+    .workout-list { display: flex; flex-direction: column; gap: 6px; max-height: 340px; overflow-y: auto; padding-right: 4px; }
+    .block-head { display: flex; justify-content: space-between; align-items: center; padding: 8px 10px; margin-top: 6px; border-radius: 8px; cursor: pointer; background: #1A202C; border: 1px solid transparent; }
+    .block-head.current { border-color: #63B3ED; background: #2b6cb022; }
+    .block-head .title { font-weight: 700; font-size: 0.9rem; color: #E2E8F0; }
+    .block-head .block-meta { font-size: 0.7rem; color: #A0AEC0; text-transform: uppercase; letter-spacing: 0.5px; }
+    .ex-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 10px 8px 22px; background: #1A202C; border-radius: 8px; cursor: pointer; border: 1px solid transparent; }
     .ex-item.current { border-color: #3182CE; background: #2b6cb022; }
     .ex-item-info { display: flex; flex-direction: column; }
-    .ex-item-name { font-weight: 600; font-size: 0.95rem; }
-    .ex-item-details { font-size: 0.8rem; color: #A0AEC0; }
+    .ex-item-name { font-weight: 600; font-size: 0.9rem; }
+    .ex-item-details { font-size: 0.78rem; color: #A0AEC0; }
+    .empty { color: #A0AEC0; font-size: 0.9rem; text-align: center; padding: 12px; }
+
     /* Summary Screen */
     #summaryScreen {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -53,9 +69,6 @@
     }
     #summaryScreen h1 { font-size: 2.5rem; color: #63B3ED; margin-bottom: 20px; }
     #summaryScreen p { font-size: 1.2rem; color: #A0AEC0; margin-bottom: 30px; }
-
-    /* Exercise Image placeholder */
-    .ex-media { width: 100%; border-radius: 8px; margin-bottom: 8px; display: none; }
   </style>
 </head>
 <body>
@@ -79,17 +92,17 @@
 
     <!-- Active Timer Card -->
     <div class="card">
+      <div style="display: flex; gap: 6px; justify-content: center; margin-bottom: 4px;" class="presets">
+        <button class="btn btn-secondary" onclick="setTimerPreset(30)">30s</button>
+        <button class="btn btn-secondary" onclick="setTimerPreset(45)">45s</button>
+        <button class="btn btn-secondary" onclick="setTimerPreset(60)">60s</button>
+        <button class="btn btn-secondary" onclick="setTimerPreset(90)">90s</button>
+        <button class="btn btn-secondary" onclick="adjustTime(10)">+10s</button>
+      </div>
       <div class="timer-label" id="timerLabel">Ready</div>
       <div class="timer-display" id="timerDisplay">00:00</div>
-      <div style="display: flex; gap: 6px; justify-content: center; margin-bottom: 4px;">
-        <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.85rem;" onclick="setTimerPreset(30)">30s</button>
-        <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.85rem;" onclick="setTimerPreset(45)">45s</button>
-        <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.85rem;" onclick="setTimerPreset(60)">60s</button>
-        <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.85rem;" onclick="setTimerPreset(90)">90s</button>
-        <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.85rem;" onclick="adjustTime(10)">+10s</button>
-      </div>
       <div class="controls">
-        <button class="btn btn-success" id="startBtn" onclick="toggleTimer()">Start</button>
+        <button class="btn btn-success" id="startBtn" onclick="toggleTimer()">Start Rest</button>
         <button class="btn btn-secondary" onclick="nextStep()">Next</button>
         <button class="btn btn-danger" onclick="resetTimer()">Reset</button>
       </div>
@@ -97,9 +110,15 @@
 
     <!-- Current Exercise Card -->
     <div class="card exercise-info">
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <span id="progressIndicator" style="font-size: 0.85rem; color: #A0AEC0;">Exercise 1 of 7</span>
+      <div class="block-top">
+        <span id="blockBadge" class="badge">Superset</span>
+        <span id="progressIndicator" style="font-size: 0.8rem; color: #A0AEC0;">Step 1 of 1</span>
+      </div>
+      <div id="blockName" class="block-name">Pair A1</div>
+      <div id="instructions" class="instructions"></div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
         <span id="setIndicator" style="font-size: 0.85rem; color: #3182CE; font-weight: bold;">Set 1 / 4</span>
+        <span id="roundIndicator" style="font-size: 0.85rem; color: #A0AEC0;">Round 1 / 4</span>
       </div>
       <img id="exImage" class="ex-media" src="" alt="Exercise preview">
       <h2 id="exName">Goblet Squat</h2>
@@ -108,7 +127,7 @@
         <div class="meta-item">Muscle: <span id="exMuscle"></span></div>
         <div class="meta-item">Reps: <input type="text" id="editReps" style="background:#1A202C; color:#FFF; border:1px solid #4A5568; border-radius:4px; padding:2px 6px; width:90px; font-size:0.9rem;" onchange="updateReps(this.value)"></div>
         <div class="meta-item">Load: <span id="exLoad"></span></div>
-        <div class="meta-item">Sets: 
+        <div class="meta-item">Sets:
           <button onclick="adjustSets(-1)" style="background:#4A5568; color:white; border:none; border-radius:3px; padding:1px 6px; cursor:pointer;">-</button>
           <span id="editSets" style="font-weight:bold; margin:0 4px;"></span>
           <button onclick="adjustSets(1)" style="background:#4A5568; color:white; border:none; border-radius:3px; padding:1px 6px; cursor:pointer;">+</button>
@@ -118,33 +137,110 @@
 
     <!-- Workout Routine List -->
     <div class="card">
-      <h3 style="font-size: 1rem; color: #CBD5E0; margin-bottom: 4px;">Routine Exercises</h3>
+      <h3 style="font-size: 1rem; color: #CBD5E0; margin-bottom: 4px;">Routine</h3>
       <div class="workout-list" id="workoutList"></div>
     </div>
   </div>
 
   <script>
     let workouts = null;
+    let sequence = [];
+    let stepIndex = 0;
+    let currentWorkoutKey = 'A';
+
+    let isResting = false;
+    let isRunning = false;
+    let timeLeft = 0;
+    let timerInterval = null;
+    let startTime = null;
+    let wakeLock = null;
+
+    // --- SEQUENCE ENGINE ---
+    // A workout is a list of blocks. A block is either:
+    //   superset -> { rounds, rest_between_exercises, rest_after_round, exercises: [...] }
+    //   single   -> { rounds, rest_after_round, exercises: [one] }
+    // The engine flattens blocks into a linear list of sets, each carrying the
+    // rest duration that follows it.
+    function blockRounds(block) {
+      const exs = block.exercises || [];
+      const maxSets = exs.reduce((m, e) => Math.max(m, e.sets || 1), 1);
+      const r = Number(block.rounds);
+      return Number.isFinite(r) && r > 0 ? r : maxSets;
+    }
+
+    function numOr(value, fallback) {
+      const n = Number(value);
+      return Number.isFinite(n) && n >= 0 ? n : fallback;
+    }
+
+    function buildSequence(key) {
+      const blocks = (workouts && workouts[key]) || [];
+      const steps = [];
+
+      blocks.forEach((block, blockIndex) => {
+        const type = block.type === 'superset' ? 'superset' : 'single';
+        const exs = block.exercises || [];
+        if (!exs.length) return;
+        const rounds = blockRounds(block);
+
+        const make = (ex, exerciseIndex, setNumber, totalSets, restAfter) => ({
+          blockIndex,
+          blockName: block.name || `Block ${blockIndex + 1}`,
+          type,
+          rounds,
+          round: setNumber,
+          instructions: block.instructions || '',
+          exercise: ex,
+          exerciseIndex,
+          exerciseCount: exs.length,
+          setNumber,
+          totalSets,
+          restAfter
+        });
+
+        if (type === 'superset') {
+          const between = numOr(block.rest_between_exercises, null);
+          const afterRound = numOr(block.rest_after_round, null);
+          for (let r = 1; r <= rounds; r++) {
+            exs.forEach((ex, ei) => {
+              const sets = ex.sets || rounds;
+              if (r > sets) return;
+              const lastInRound = ei === exs.length - 1;
+              const restAfter = lastInRound
+                ? (afterRound !== null ? afterRound : numOr(ex.rest, 60))
+                : (between !== null ? between : numOr(ex.rest, 60));
+              steps.push(make(ex, ei, r, sets, restAfter));
+            });
+          }
+        } else {
+          const ex = exs[0];
+          const sets = ex.sets || rounds;
+          const afterRound = numOr(block.rest_after_round, null);
+          for (let k = 1; k <= sets; k++) {
+            const restAfter = k === sets
+              ? (afterRound !== null ? afterRound : numOr(ex.rest, 60))
+              : numOr(ex.rest, 60);
+            steps.push(make(ex, 0, k, sets, restAfter));
+          }
+        }
+      });
+
+      return steps;
+    }
+    // --- END SEQUENCE ENGINE ---
 
     async function init() {
       try {
-        const response = await fetch('workouts.json');
+        const response = await fetch('workouts.json', { cache: 'no-store' });
         workouts = await response.json();
+        sequence = buildSequence(currentWorkoutKey);
+        stepIndex = 0;
         render();
       } catch (e) {
-        console.error("Could not load workouts.json", e);
+        console.error('Could not load workouts.json', e);
+        document.getElementById('workoutList').innerHTML = '<div class="empty">Could not load workouts.json</div>';
       }
     }
-
-    let currentWorkoutKey = 'A';
-    let currentExIndex = 0;
-    let currentSet = 1;
-    let isResting = false;
-    let timeLeft = 0;
-    let timerInterval = null;
-    let isRunning = false;
-    let startTime = null;
-    let wakeLock = null;
 
     async function requestWakeLock() {
       try {
@@ -171,31 +267,105 @@
       if (navigator.vibrate) navigator.vibrate(200);
     }
 
+    function formatTime(sec) {
+      const s = Math.max(0, Math.round(sec || 0));
+      const m = Math.floor(s / 60);
+      return `${m.toString().padStart(2, '0')}:${(s % 60).toString().padStart(2, '0')}`;
+    }
+
+    function currentStep() {
+      return sequence[stepIndex] || null;
+    }
+
     function switchWorkout(key) {
       currentWorkoutKey = key;
-      currentExIndex = 0;
-      currentSet = 1;
+      stopTick();
+      stepIndex = 0;
+      timeLeft = 0;
       isResting = false;
-      stopTimer();
+      sequence = buildSequence(key);
       document.getElementById('btnA').className = key === 'A' ? 'active' : '';
       document.getElementById('btnB').className = key === 'B' ? 'active' : '';
       render();
     }
 
+    // Rebuild the sequence after a data edit, keeping the user on the same set.
+    function captureAnchor() {
+      const s = currentStep();
+      return s
+        ? { blockIndex: s.blockIndex, exercise: s.exercise, setNumber: s.setNumber, index: stepIndex }
+        : { index: 0 };
+    }
+
+    function refreshSequence(anchor) {
+      sequence = buildSequence(currentWorkoutKey);
+      if (!sequence.length) {
+        stepIndex = 0;
+        render();
+        return;
+      }
+      let idx = -1;
+      if (anchor && anchor.exercise) {
+        idx = sequence.findIndex(s => s.blockIndex === anchor.blockIndex && s.exercise === anchor.exercise && s.setNumber === anchor.setNumber);
+        if (idx < 0) idx = sequence.findIndex(s => s.blockIndex === anchor.blockIndex && s.exercise === anchor.exercise);
+      }
+      if (idx < 0) idx = Math.min(anchor ? anchor.index : 0, sequence.length - 1);
+      stepIndex = Math.max(0, Math.min(idx, sequence.length - 1));
+      render();
+    }
+
     function render() {
-      const exList = workouts[currentWorkoutKey];
-      const ex = exList[currentExIndex];
+      if (!workouts) return;
+      const step = currentStep();
+      const el = (id) => document.getElementById(id);
 
-      document.getElementById('progressIndicator').innerText = `Exercise ${currentExIndex + 1} of ${exList.length}`;
-      document.getElementById('setIndicator').innerText = `Set ${currentSet} / ${ex.sets}`;
-      document.getElementById('exName').innerText = ex.name;
-      document.getElementById('exNotes').innerText = ex.notes;
-      document.getElementById('exMuscle').innerText = ex.muscle;
-      document.getElementById('editReps').value = ex.reps;
-      document.getElementById('editSets').innerText = ex.sets;
-      document.getElementById('exLoad').innerText = ex.load;
+      if (!step) {
+        el('blockBadge').innerText = '—';
+        el('blockBadge').className = 'badge single';
+        el('progressIndicator').innerText = '0 / 0';
+        el('blockName').innerText = 'No exercises loaded';
+        el('instructions').innerText = '';
+        el('instructions').style.display = 'none';
+        el('setIndicator').innerText = '';
+        el('roundIndicator').innerText = '';
+        el('exName').innerText = '—';
+        el('exNotes').innerText = '';
+        el('exMuscle').innerText = '';
+        el('exLoad').innerText = '';
+        el('editReps').value = '';
+        el('editSets').innerText = '—';
+        el('exImage').style.display = 'none';
+        el('timerLabel').innerText = 'Ready';
+        el('timerDisplay').innerText = formatTime(0);
+        updateStartBtn();
+        renderList();
+        return;
+      }
 
-      const imgEl = document.getElementById('exImage');
+      const badge = el('blockBadge');
+      badge.innerText = step.type === 'superset'
+        ? `Superset · ${step.rounds} round${step.rounds === 1 ? '' : 's'}`
+        : `Single · ${step.totalSets} set${step.totalSets === 1 ? '' : 's'}`;
+      badge.className = 'badge' + (step.type === 'superset' ? '' : ' single');
+
+      el('progressIndicator').innerText = `Step ${stepIndex + 1} of ${sequence.length}`;
+      el('blockName').innerText = step.blockName;
+      el('instructions').innerText = step.instructions;
+      el('instructions').style.display = step.instructions ? 'block' : 'none';
+
+      const ex = step.exercise;
+      el('setIndicator').innerText = step.type === 'superset'
+        ? `Exercise ${step.exerciseIndex + 1}/${step.exerciseCount} · Set ${step.setNumber}/${step.totalSets}`
+        : `Set ${step.setNumber} / ${step.totalSets}`;
+      el('roundIndicator').innerText = step.type === 'superset' ? `Round ${step.round}/${step.rounds}` : '';
+      el('exName').innerText = ex.name;
+      el('exNotes').innerText = ex.notes || '';
+      el('exMuscle').innerText = ex.muscle || '—';
+      el('exLoad').innerText = ex.load || '—';
+      el('editReps').value = ex.reps || '';
+      el('editSets').innerText = step.totalSets;
+
+      const imgEl = el('exImage');
       if (ex.image) {
         imgEl.src = ex.image;
         imgEl.style.display = 'block';
@@ -203,172 +373,204 @@
         imgEl.style.display = 'none';
       }
 
-      if (!isRunning) {
-        document.getElementById('timerLabel').innerText = isResting ? 'Rest Period' : 'Ready / Working';
-        document.getElementById('timerDisplay').innerText = formatTime(isResting ? timeLeft : 0);
+      if (isRunning) {
+        el('timerLabel').innerText = 'Rest period';
+        el('timerDisplay').innerText = formatTime(timeLeft);
+      } else if (isResting && timeLeft > 0) {
+        el('timerLabel').innerText = 'Rest paused';
+        el('timerDisplay').innerText = formatTime(timeLeft);
+      } else {
+        el('timerLabel').innerText = `Ready · rest ${step.restAfter}s`;
+        el('timerDisplay').innerText = formatTime(step.restAfter);
       }
 
-      // Render list
+      updateStartBtn();
+      renderList();
+    }
+
+    function renderList() {
       const listEl = document.getElementById('workoutList');
+      if (!listEl) return;
       listEl.innerHTML = '';
-      exList.forEach((item, idx) => {
-        const div = document.createElement('div');
-        div.className = `ex-item ${idx === currentExIndex ? 'current' : ''}`;
-        div.onclick = () => { selectExercise(idx); };
-        div.innerHTML = `
-          <div class="ex-item-info">
-            <span class="ex-item-name">${idx + 1}. ${item.name}</span>
-            <span class="ex-item-details">${item.sets} sets • ${item.reps}</span>
-          </div>
-          <span style="font-size: 0.8rem; color: #63B3ED;">${item.load}</span>
-        `;
-        listEl.appendChild(div);
+      const blocks = (workouts && workouts[currentWorkoutKey]) || [];
+      const step = currentStep();
+
+      if (!blocks.length) {
+        listEl.innerHTML = '<div class="empty">No blocks in this workout.</div>';
+        return;
+      }
+
+      blocks.forEach((block, bi) => {
+        const type = block.type === 'superset' ? 'Superset' : 'Single';
+        const rounds = blockRounds(block);
+
+        const head = document.createElement('div');
+        head.className = 'block-head' + (step && step.blockIndex === bi ? ' current' : '');
+        head.innerHTML = `<span class="title">${block.name || 'Block ' + (bi + 1)}</span><span class="block-meta">${type} · ${rounds} round${rounds === 1 ? '' : 's'}</span>`;
+        head.onclick = () => jumpToBlock(bi);
+        listEl.appendChild(head);
+
+        (block.exercises || []).forEach((ex, ei) => {
+          const isCurrent = step && step.blockIndex === bi && step.exerciseIndex === ei;
+          const div = document.createElement('div');
+          div.className = 'ex-item' + (isCurrent ? ' current' : '');
+          div.onclick = () => jumpToBlock(bi, ei);
+          div.innerHTML = `
+            <div class="ex-item-info">
+              <span class="ex-item-name">${ex.name}</span>
+              <span class="ex-item-details">${ex.sets || rounds} sets • ${ex.reps || ''}</span>
+            </div>
+            <span class="ex-item-details">${ex.load || ''}</span>
+          `;
+          listEl.appendChild(div);
+        });
       });
     }
 
-    function adjustSets(delta) {
-      const ex = workouts[currentWorkoutKey][currentExIndex];
-      ex.sets = Math.max(1, ex.sets + delta);
-      if (currentSet > ex.sets) currentSet = ex.sets;
-      render();
-    }
-
-    function updateReps(val) {
-      workouts[currentWorkoutKey][currentExIndex].reps = val;
-    }
-
-    function selectExercise(idx) {
-      stopTimer();
-      currentExIndex = idx;
-      currentSet = 1;
+    function jumpToBlock(blockIndex, exerciseIndex) {
+      const idx = sequence.findIndex(s => s.blockIndex === blockIndex && (exerciseIndex == null || s.exerciseIndex === exerciseIndex));
+      if (idx < 0) return;
+      stopTick();
+      stepIndex = idx;
+      timeLeft = 0;
       isResting = false;
       render();
     }
 
-    function formatTime(sec) {
-      const m = Math.floor(sec / 60);
-      const s = sec % 60;
-      return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    function adjustSets(delta) {
+      const step = currentStep();
+      if (!step) return;
+      const block = workouts[currentWorkoutKey][step.blockIndex];
+      const anchor = captureAnchor();
+
+      if (step.type === 'superset') {
+        // rounds drives a superset sequence, so it moves all member exercises together
+        const rounds = Math.max(1, Math.min(20, blockRounds(block) + delta));
+        block.rounds = rounds;
+        (block.exercises || []).forEach(e => { e.sets = rounds; });
+      } else {
+        const sets = Math.max(1, Math.min(20, (step.exercise.sets || 1) + delta));
+        step.exercise.sets = sets;
+        block.rounds = sets;
+      }
+      refreshSequence(anchor);
+    }
+
+    function updateReps(val) {
+      const step = currentStep();
+      if (!step) return;
+      step.exercise.reps = val;
+      renderList();
+    }
+
+    function updateStartBtn() {
+      const btn = document.getElementById('startBtn');
+      if (isRunning) {
+        btn.innerText = 'Pause';
+        btn.className = 'btn btn-secondary';
+      } else if (timeLeft > 0) {
+        btn.innerText = 'Resume';
+        btn.className = 'btn btn-success';
+      } else {
+        btn.innerText = 'Start Rest';
+        btn.className = 'btn btn-success';
+      }
+    }
+
+    function stopTick() {
+      if (timerInterval) clearInterval(timerInterval);
+      timerInterval = null;
+      isRunning = false;
     }
 
     function toggleTimer() {
+      if (isRunning) {
+        stopTick();
+        render();
+        return;
+      }
+      const step = currentStep();
+      if (!step) return;
       if (!startTime) {
         startTime = new Date();
         requestWakeLock();
       }
-      if (isRunning) {
-        stopTimer();
-        document.getElementById('startBtn').innerText = 'Resume';
-        document.getElementById('startBtn').className = 'btn btn-success';
+      if (timeLeft <= 0) timeLeft = step.restAfter || 60;
+      isResting = true;
+      isRunning = true;
+      render();
+      timerInterval = setInterval(tick, 1000);
+    }
+
+    function tick() {
+      timeLeft = Math.max(0, timeLeft - 1);
+      document.getElementById('timerDisplay').innerText = formatTime(timeLeft);
+      if (timeLeft >= 1 && timeLeft <= 3) beep();
+      if (timeLeft === 0) {
+        beep();
+        stopTick();
+        advance();
+      }
+    }
+
+    function advance() {
+      isResting = false;
+      timeLeft = 0;
+      if (stepIndex < sequence.length - 1) {
+        stepIndex++;
+        render();
       } else {
-        startTimer();
+        render();
+        showSummary();
       }
-    }
-
-    function startTimer() {
-      if (!isRunning) {
-        isRunning = true;
-        document.getElementById('startBtn').innerText = 'Pause';
-        document.getElementById('startBtn').className = 'btn btn-secondary';
-        
-        if (!isResting && timeLeft === 0) {
-          // Starting rest after a set
-          const ex = workouts[currentWorkoutKey][currentExIndex];
-          timeLeft = ex.rest;
-          isResting = true;
-          document.getElementById('timerLabel').innerText = 'Rest Period';
-        }
-
-        timerInterval = setInterval(() => {
-          if (timeLeft > 0) {
-            timeLeft--;
-            document.getElementById('timerDisplay').innerText = formatTime(timeLeft);
-            if (timeLeft <= 3 && timeLeft > 0) beep();
-          } else {
-            beep();
-            stopTimer();
-            // Rest finished, move to next set or exercise
-            const ex = workouts[currentWorkoutKey][currentExIndex];
-            if (currentSet < ex.sets) {
-              currentSet++;
-              isResting = false;
-              document.getElementById('timerLabel').innerText = `Ready for Set ${currentSet}`;
-              timeLeft = 0;
-            } else {
-              // Next exercise
-              if (currentExIndex < workouts[currentWorkoutKey].length - 1) {
-                currentExIndex++;
-                currentSet = 1;
-                isResting = false;
-                document.getElementById('timerLabel').innerText = 'Next Exercise';
-                timeLeft = 0;
-              } else {
-                showSummary();
-              }
-            }
-            render();
-          }
-        }, 1000);
-      }
-    }
-
-    function showSummary() {
-      stopTimer();
-      if (wakeLock) wakeLock.release();
-      const endTime = new Date();
-      const diff = Math.floor((endTime - startTime) / 1000);
-      document.getElementById('summaryText').innerText = `Total time: ${formatTime(diff)}`;
-      document.getElementById('summaryScreen').style.display = 'flex';
-    }
-
-    function stopTimer() {
-      isRunning = false;
-      clearInterval(timerInterval);
-      document.getElementById('startBtn').innerText = 'Start Rest';
-      document.getElementById('startBtn').className = 'btn btn-success';
     }
 
     function nextStep() {
-      stopTimer();
-      const ex = workouts[currentWorkoutKey][currentExIndex];
-      if (currentSet < ex.sets) {
-        currentSet++;
-      } else if (currentExIndex < workouts[currentWorkoutKey].length - 1) {
-        currentExIndex++;
-        currentSet = 1;
-      }
+      stopTick();
       isResting = false;
       timeLeft = 0;
-      document.getElementById('timerLabel').innerText = 'Ready';
-      render();
+      advance();
     }
 
     function resetTimer() {
-      stopTimer();
-      currentSet = 1;
-      isResting = false;
+      stopTick();
+      stepIndex = 0;
       timeLeft = 0;
-      document.getElementById('timerLabel').innerText = 'Ready';
+      isResting = false;
       render();
     }
 
     function setTimerPreset(sec) {
-      stopTimer();
+      if (!currentStep()) return;
+      stopTick();
+      if (!startTime) {
+        startTime = new Date();
+        requestWakeLock();
+      }
       timeLeft = sec;
       isResting = true;
-      document.getElementById('timerLabel').innerText = `Rest (${sec}s)`;
-      document.getElementById('timerDisplay').innerText = formatTime(timeLeft);
-      startTimer();
+      isRunning = true;
+      render();
+      timerInterval = setInterval(tick, 1000);
     }
 
     function adjustTime(sec) {
       timeLeft = Math.max(0, timeLeft + sec);
-      document.getElementById('timerDisplay').innerText = formatTime(timeLeft);
+      isResting = timeLeft > 0;
+      render();
+    }
+
+    function showSummary() {
+      stopTick();
+      if (wakeLock) wakeLock.release();
+      const diff = startTime ? Math.floor((new Date() - startTime) / 1000) : 0;
+      document.getElementById('summaryText').innerText = `Total time: ${formatTime(diff)}`;
+      document.getElementById('summaryScreen').style.display = 'flex';
     }
 
     // Register Service Worker
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('service-worker.js')
+      navigator.serviceWorker.register('service-worker.js', { updateViaCache: 'none' })
         .then(() => console.log('Service Worker Registered'));
     }
 
